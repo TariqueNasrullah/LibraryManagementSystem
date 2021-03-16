@@ -6,7 +6,7 @@ Tested `Python3.9`
 
 ## Installation
 `- pip install -r requirements.txt`\
-`- python manage.py makemigrations && python mange.py migrate`\
+`- python manage.py makemigrations && python mange.py migrate`
 
 Create a superuser with the command
 
@@ -15,3 +15,6 @@ Create a superuser with the command
 Run the server
 
 `- python manage.py runserver`
+
+## Test
+`- python manage.py test`
