@@ -4,7 +4,7 @@ from users.models import CustomUser
 
 class CustomUserSerializer(serializers.ModelSerializer):
     """
-    Currently unused in preference of the below.
+    Serializer Class for CustomUser Model
     """
     email = serializers.EmailField(required=True)
     username = serializers.CharField(required=True)
@@ -17,18 +17,24 @@ class CustomUserSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
+        # extract password from the request data
         password = validated_data.pop('password', None)
-        # as long as the fields are the same, we can just use this
+
         instance = self.Meta.model(**validated_data)
+
+        # set Hashed password to the user
         if password is not None:
             instance.set_password(password)
         instance.save()
         return instance
 
     def update(self, instance, validated_data):
+        # extract password from the request data
         password = validated_data.pop('password', None)
-        # as long as the fields are the same, we can just use this
+
         instance = super(CustomUserSerializer, self).update(instance, validated_data)
+
+        # set Hashed password to the user
         if password is not None:
             instance.set_password(password)
         instance.save()

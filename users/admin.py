@@ -4,6 +4,9 @@ from django.contrib.auth.admin import UserAdmin
 
 
 class UserAdminConfig(UserAdmin):
+    """
+    Custom User Configuration for the Django default admin panel.
+    """
     model = CustomUser
 
     fieldsets = (
@@ -16,4 +19,5 @@ class UserAdminConfig(UserAdmin):
     )
 
 
+# Register CustomUser to the Django Admin Panel
 admin.site.register(CustomUser, UserAdminConfig)

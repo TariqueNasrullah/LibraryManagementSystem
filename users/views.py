@@ -1,12 +1,8 @@
 import django_filters
 from rest_framework import viewsets
-from rest_framework import permissions
-from rest_framework.response import Response
-from rest_framework import status
 from users.models import CustomUser
 from users.serializers import CustomUserSerializer
 from django.http import Http404
-from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
@@ -14,6 +10,10 @@ from rest_framework import status
 
 
 class CustomUserCreate(APIView):
+    """
+    ApiView that supports only POST request, creates an user
+    Used for user registration.
+    """
     permission_classes = [AllowAny]
     serializer_class = CustomUserSerializer
 
@@ -28,6 +28,12 @@ class CustomUserCreate(APIView):
 
 
 class UserView(APIView):
+    """
+    UserView ApiView that supports GET, PATCH request .Used
+    it for getting own profile of the user and update profile
+    information.
+    PATCH supports partial update of the fields
+    """
     permission_classes = [IsAuthenticated]
     serializer_class = CustomUserSerializer
 

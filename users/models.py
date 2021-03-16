@@ -3,8 +3,14 @@ from django.utils.translation import gettext_lazy as _
 from django.db import models
 from django.utils import timezone
 
+'''
+CustomAccountManager implements BaseUserManager that enables
+Django to user email field for login, instead of username
+'''
+
 
 class CustomAccountManager(BaseUserManager):
+    # create_user creates an user with unprivileged access and save it to storage
     def create_user(self, email, username, first_name, password, **other_fields):
         if not email:
             raise ValueError(_('You must provide an email address'))
@@ -16,6 +22,7 @@ class CustomAccountManager(BaseUserManager):
 
         return user
 
+    # create_superuser creates an user with privileged access and save it to storage
     def create_superuser(self, email, username, first_name, password, **other_fields):
         other_fields.setdefault('is_staff', True)
         other_fields.setdefault('is_superuser', True)
@@ -29,6 +36,7 @@ class CustomAccountManager(BaseUserManager):
         return self.create_user(email, username, first_name, password, **other_fields)
 
 
+# CustomUser custom model that support avatar image field
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_('email address'), unique=True)
     username = models.CharField(max_length=20, unique=True)
