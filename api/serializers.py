@@ -1,6 +1,7 @@
 from rest_framework import serializers
-from api.models import Book, Author
-
+from api.models import Book, Author, BookLoan
+from users.serializers import CustomUserSerializer
+from django.utils import timezone
 
 class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
@@ -31,3 +32,49 @@ class BookSerializer(serializers.ModelSerializer):
         instance.authors.set(authors)
 
         return instance
+
+
+class BookLoanSerializer(serializers.ModelSerializer):
+    borrower = CustomUserSerializer(read_only=True, default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = BookLoan
+        fields = '__all__'
+        extra_kwargs = {
+            'created_at': {'read_only': True},
+            'due_date': {'read_only': True},
+            'returned_date': {'read_only': True},
+            'borrower': {'read_only': True},
+            'book': {'read_only': True},
+        }
+
+    def update(self, instance, validated_data):
+        updated_status = validated_data.pop('status', instance.status)
+
+        instance = super(BookLoanSerializer, self).update(instance, validated_data)
+
+        if instance.status != updated_status:
+            if updated_status == 'APPROVED':
+                instance.due_date = timezone.now().date() + timezone.timedelta(days=14)
+            elif updated_status == 'RETURNED':
+                instance.returned_date = timezone.now().date()
+
+            instance.status = updated_status
+            instance.save()
+
+        return instance
+
+
+class BookLoanCreateRequestSerializer(serializers.ModelSerializer):
+    borrower = CustomUserSerializer(read_only=True, default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = BookLoan
+        fields = '__all__'
+        extra_kwargs = {
+            'created_at': {'read_only': True},
+            'due_date': {'read_only': True},
+            'returned_date': {'read_only': True},
+            'borrower': {'read_only': True},
+            'status': {'read_only': True},
+        }
